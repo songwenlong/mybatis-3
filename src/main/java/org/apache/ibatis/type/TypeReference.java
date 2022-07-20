@@ -20,6 +20,7 @@ import java.lang.reflect.Type;
 
 /**
  * References a generic type.
+ * 注意这里的 generic type，指的就是java的Type
  *
  * @param <T> the referenced type
  * @since 3.1.0
@@ -30,11 +31,17 @@ public abstract class TypeReference<T> {
   private final Type rawType;
 
   protected TypeReference() {
+    //getClass()返回当前类的运行时类型
     rawType = getSuperclassTypeParameter(getClass());
   }
 
   Type getSuperclassTypeParameter(Class<?> clazz) {
+    //获得带泛型的父类
     Type genericSuperclass = clazz.getGenericSuperclass();
+    /**
+     * 父类genericSuperclass 是Class类型 并且 不是TypeReference.class，继续找genericSuperclass的父类，直至找到 TypeReference.class
+     * 因为类型处理器继承了 TypeReference，所以一定能找到，比如 StringTypeHandler extends BaseTypeHandler<String>，一定可以找到 TypeHandler<String>
+     */
     if (genericSuperclass instanceof Class) {
       // try to climb up the hierarchy until meet something useful
       if (TypeReference.class != genericSuperclass) {
@@ -45,8 +52,10 @@ public abstract class TypeReference<T> {
         + "Remove the extension or add a type parameter to it.");
     }
 
+    //得到泛型的具体类型，比如 StringTypeHandler，它 extends BaseTypeHandler<String>，那么rawType就是String
     Type rawType = ((ParameterizedType) genericSuperclass).getActualTypeArguments()[0];
     // TODO remove this when Reflector is fixed to return Types
+    //如果是 ParameterizedType 类型，因为 ParameterizedType 继承了 Type，还要获取Type
     if (rawType instanceof ParameterizedType) {
       rawType = ((ParameterizedType) rawType).getRawType();
     }
