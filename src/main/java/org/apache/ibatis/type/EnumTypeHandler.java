@@ -21,6 +21,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
+ * 使用枚举的 name 作为参数，区别于 EnumOrdinalTypeHandler
+ *
  * @author Clinton Begin
  */
 public class EnumTypeHandler<E extends Enum<E>> extends BaseTypeHandler<E> {
@@ -46,6 +48,7 @@ public class EnumTypeHandler<E extends Enum<E>> extends BaseTypeHandler<E> {
   @Override
   public E getNullableResult(ResultSet rs, String columnName) throws SQLException {
     String s = rs.getString(columnName);
+    //Enum.valueOf(type, s) 枚举name转换为枚举
     return s == null ? null : Enum.valueOf(type, s);
   }
 

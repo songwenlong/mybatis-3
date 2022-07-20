@@ -21,6 +21,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
+ * 使用枚举的ordinal作为参数，区别于EnumTypeHandler
+ *
  * @author Clinton Begin
  */
 public class EnumOrdinalTypeHandler<E extends Enum<E>> extends BaseTypeHandler<E> {
@@ -71,6 +73,7 @@ public class EnumOrdinalTypeHandler<E extends Enum<E>> extends BaseTypeHandler<E
     return toOrdinalEnum(ordinal);
   }
 
+  //ordinal转换为枚举
   private E toOrdinalEnum(int ordinal) {
     try {
       return enums[ordinal];
