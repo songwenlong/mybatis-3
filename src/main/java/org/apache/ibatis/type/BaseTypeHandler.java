@@ -26,6 +26,11 @@ import org.apache.ibatis.session.Configuration;
 /**
  * The base {@link TypeHandler} for references a generic type.
  * <p>
+ * 1）此类复写了父类 TypeHandler 中的 setParameter 方法和 getResult 方法，
+ * setParameter方法中区分了 参数为null和不为null的情况，
+ * getResult 方法考虑了 ResultSet、CallableStatement 为 null 的情况
+ * 2）自定义了抽象方法，
+ * <p>
  * Important: Since 3.5.0, This class never call the {@link ResultSet#wasNull()} and
  * {@link CallableStatement#wasNull()} method for handling the SQL {@code NULL} value.
  * In other words, {@code null} value handling should be performed on subclass.

@@ -21,6 +21,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
+ * 预处理语句设置参数、从结果集取值时，进行 javaType 和 jdbcType 之间的转换
+ *
  * @author Clinton Begin
  */
 public interface TypeHandler<T> {
@@ -29,6 +31,7 @@ public interface TypeHandler<T> {
 
   /**
    * Gets the result.
+   * 从结果集中按列名取值
    *
    * @param rs
    *          the rs
@@ -40,8 +43,10 @@ public interface TypeHandler<T> {
    */
   T getResult(ResultSet rs, String columnName) throws SQLException;
 
+  //从结果集中使用列索引取值
   T getResult(ResultSet rs, int columnIndex) throws SQLException;
 
+  //从存储过程中取值
   T getResult(CallableStatement cs, int columnIndex) throws SQLException;
 
 }
