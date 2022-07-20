@@ -23,9 +23,11 @@ import java.lang.annotation.Target;
 
 /**
  * The annotation that specify jdbc types to map {@link TypeHandler}.
+ * <p>标注在TypeHandler上，指定TypeHand处理哪些 jdbc types
  *
  * <p>
  * <b>How to use:</b>
+ * 用法：
  * <pre>
  * &#064;MappedJdbcTypes({JdbcType.CHAR, JdbcType.VARCHAR})
  * public class StringTrimmingTypeHandler implements TypeHandler&lt;String&gt; {

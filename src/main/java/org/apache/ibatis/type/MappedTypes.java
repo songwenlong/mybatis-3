@@ -23,9 +23,10 @@ import java.lang.annotation.Target;
 
 /**
  * The annotation that specify java types to map {@link TypeHandler}.
- *
+ * <p>标注在TypeHandler上，指定TypeHand处理哪些 java types
  * <p>
  * <b>How to use:</b>
+ * 用法：
  * <pre>
  * &#064;MappedTypes(String.class)
  * public class StringTrimmingTypeHandler implements TypeHandler&lt;String&gt; {
