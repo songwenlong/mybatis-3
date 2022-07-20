@@ -44,7 +44,7 @@ public class PropertyTokenizer implements Iterator<PropertyTokenizer> {
       /*
        * 假设 fullname为 months[1].days[2]，到这一步:
        *   name = months[1]
-       *   childern = "days[2]"
+       *   children = "days[2]"
        */
       name = fullname.substring(0, delim);
       children = fullname.substring(delim + 1);
@@ -64,7 +64,7 @@ public class PropertyTokenizer implements Iterator<PropertyTokenizer> {
     if (delim > -1) {
       /*
        * 假设 fullname为 months[1].days[2]，到这一步:
-       *   childern = "days[2]"
+       *   children = "days[2]"
        *   indexedName = months[1]
        *   index = 1
        *   name = months
