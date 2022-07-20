@@ -34,6 +34,7 @@ import org.apache.ibatis.reflection.ReflectionException;
 import org.apache.ibatis.reflection.Reflector;
 
 /**
+ * ObjectFactory默认实现类，实际上就是调用类的构造方法进行实例的创建
  * @author Clinton Begin
  */
 public class DefaultObjectFactory implements ObjectFactory, Serializable {
@@ -56,6 +57,7 @@ public class DefaultObjectFactory implements ObjectFactory, Serializable {
   private  <T> T instantiateClass(Class<T> type, List<Class<?>> constructorArgTypes, List<Object> constructorArgs) {
     try {
       Constructor<T> constructor;
+      //构造函数入参类型List、入参List有一个为空，则使用无参构造函数创建实例
       if (constructorArgTypes == null || constructorArgs == null) {
         constructor = type.getDeclaredConstructor();
         try {
@@ -69,6 +71,7 @@ public class DefaultObjectFactory implements ObjectFactory, Serializable {
           }
         }
       }
+      //构造函数入参类型List、入参List都不为空，则使用有参构造函数创建实例
       constructor = type.getDeclaredConstructor(constructorArgTypes.toArray(new Class[0]));
       try {
         return constructor.newInstance(constructorArgs.toArray(new Object[0]));
@@ -89,6 +92,15 @@ public class DefaultObjectFactory implements ObjectFactory, Serializable {
     }
   }
 
+  /**
+   * 如果入参是接口，根据接口确定其实现类
+   * 比如List，有ArrayList，LinkedList等多种实现类，此方法确定使用期ArrayList的实现类
+   * 如下：
+   * ArrayList.class <= List.class、 Collection.class、Iterable.class
+   * HashMap.class <= Map.class
+   * TreeSet.class <= SortedSet.class
+   * HashSet.class <= Set.class
+   */
   protected Class<?> resolveInterface(Class<?> type) {
     Class<?> classToCreate;
     if (type == List.class || type == Collection.class || type == Iterable.class) {
@@ -105,6 +117,7 @@ public class DefaultObjectFactory implements ObjectFactory, Serializable {
     return classToCreate;
   }
 
+  //确定入参是否为集合类型
   @Override
   public <T> boolean isCollection(Class<T> type) {
     return Collection.class.isAssignableFrom(type);
