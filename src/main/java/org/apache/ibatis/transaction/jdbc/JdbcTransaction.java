@@ -31,6 +31,10 @@ import org.apache.ibatis.transaction.TransactionException;
  * It relies on the connection retrieved from the dataSource to manage the scope of the transaction.
  * Delays connection retrieval until getConnection() is called.
  * Ignores commit or rollback requests when autocommit is on.
+ * JdbcTransaction是直接使用JDBC提交和回滚功能的Transaction实现类。
+ * 使用从数据源获取到的连接来管理事务的范围。
+ * 延迟连接的获取，直到调用getConnection()方法。
+ * 当自动提交开启时，忽略提交或回滚请求。
  *
  * @author Clinton Begin
  *
@@ -71,6 +75,7 @@ public class JdbcTransaction implements Transaction {
 
   @Override
   public void commit() throws SQLException {
+    //不是自动提交的情况下，才可提交
     if (connection != null && !connection.getAutoCommit()) {
       if (log.isDebugEnabled()) {
         log.debug("Committing JDBC Connection [" + connection + "]");
@@ -81,6 +86,7 @@ public class JdbcTransaction implements Transaction {
 
   @Override
   public void rollback() throws SQLException {
+    //不是自动提交的情况下，才可回滚
     if (connection != null && !connection.getAutoCommit()) {
       if (log.isDebugEnabled()) {
         log.debug("Rolling back JDBC Connection [" + connection + "]");
@@ -102,6 +108,7 @@ public class JdbcTransaction implements Transaction {
 
   protected void setDesiredAutoCommit(boolean desiredAutoCommit) {
     try {
+      //如果连接的autoCommit和期望的不同，重新设置
       if (connection.getAutoCommit() != desiredAutoCommit) {
         if (log.isDebugEnabled()) {
           log.debug("Setting autocommit to " + desiredAutoCommit + " on JDBC Connection [" + connection + "]");
@@ -121,10 +128,13 @@ public class JdbcTransaction implements Transaction {
     try {
       if (!skipSetAutoCommitOnClose && !connection.getAutoCommit()) {
         // MyBatis does not call commit/rollback on a connection if just selects were performed.
+        // 如果只是执行select，mybatis不会在连接上执行提交或回滚操作。
         // Some databases start transactions with select statements
         // and they mandate a commit/rollback before closing the connection.
         // A workaround is setting the autocommit to true before closing the connection.
         // Sybase throws an exception here.
+        // 有些数据库使用选择语句启动事务，并在关闭连接之前强制提交/回滚。
+        // 一个解决方法是在关闭连接之前将自动提交设置为true。
         if (log.isDebugEnabled()) {
           log.debug("Resetting autocommit to true on JDBC Connection [" + connection + "]");
         }

@@ -30,6 +30,10 @@ import org.apache.ibatis.transaction.Transaction;
  * Delays connection retrieval until getConnection() is called.
  * Ignores all commit or rollback requests.
  * By default, it closes the connection but can be configured not to do it.
+ * ManagedTransaction 是让容器来管理事务整个生命周期的Transaction实现类。
+ * 延迟连接的获取，直到调用getConnection()方法。
+ * 忽略所有的提交和回滚请求。
+ * 默认情况下关闭连接，但可以通过配置来保持连接。
  *
  * @author Clinton Begin
  *
@@ -75,6 +79,7 @@ public class ManagedTransaction implements Transaction {
 
   @Override
   public void close() throws SQLException {
+    //关闭连接配置项为true时，关闭连接
     if (this.closeConnection && this.connection != null) {
       if (log.isDebugEnabled()) {
         log.debug("Closing JDBC Connection [" + this.connection + "]");
