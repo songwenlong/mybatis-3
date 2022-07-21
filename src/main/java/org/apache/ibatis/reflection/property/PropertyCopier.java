@@ -20,14 +20,18 @@ import java.lang.reflect.Field;
 import org.apache.ibatis.reflection.Reflector;
 
 /**
+ * 属性拷贝器，主要在mybatis创建代理对象时使用
+ *
  * @author Clinton Begin
  */
 public final class PropertyCopier {
 
   private PropertyCopier() {
     // Prevent Instantiation of Static Class
+    //此类中的方法都是静态方法，不允许实例化，构造函数为private的
   }
 
+  //将一个实例的属性值拷贝给另一个实例的同名属性；属性顺序由子类向父类逐层查找
   public static void copyBeanProperties(Class<?> type, Object sourceBean, Object destinationBean) {
     Class<?> parent = type;
     while (parent != null) {

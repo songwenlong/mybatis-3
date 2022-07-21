@@ -20,14 +20,25 @@ import java.util.Locale;
 import org.apache.ibatis.reflection.ReflectionException;
 
 /**
+ * 属性命名器，作用：
+ * 1）判断方法名是否为getter、setter；
+ * 2）将方法名转换为属性名。
+ *
  * @author Clinton Begin
  */
 public final class PropertyNamer {
 
   private PropertyNamer() {
     // Prevent Instantiation of Static Class
+    //此类中的方法都是静态方法，不允许实例化，构造函数为private的
   }
 
+  /**
+   * 将方法名转换为属性名：
+   * isXxx => xxx
+   * getXxx => xxx
+   * setXxx => xxx
+   */
   public static String methodToProperty(String name) {
     if (name.startsWith("is")) {
       name = name.substring(2);
@@ -48,10 +59,16 @@ public final class PropertyNamer {
     return isGetter(name) || isSetter(name);
   }
 
+  /**
+   * 判断方法名name是否为getXxx、isXxx格式
+   */
   public static boolean isGetter(String name) {
     return (name.startsWith("get") && name.length() > 3) || (name.startsWith("is") && name.length() > 2);
   }
 
+  /**
+   * 判断方法名name是否为setXxx格式
+   */
   public static boolean isSetter(String name) {
     return name.startsWith("set") && name.length() > 3;
   }
