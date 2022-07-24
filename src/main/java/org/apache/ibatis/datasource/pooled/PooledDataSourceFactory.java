@@ -18,6 +18,8 @@ package org.apache.ibatis.datasource.pooled;
 import org.apache.ibatis.datasource.unpooled.UnpooledDataSourceFactory;
 
 /**
+ * 注意此类继承的是 UnpooledDataSourceFactory，这样 PooledDataSourceFactory 也具有创建 UnpooledDataSource 的能力
+ *
  * @author Clinton Begin
  */
 public class PooledDataSourceFactory extends UnpooledDataSourceFactory {

@@ -36,13 +36,18 @@ class PooledConnection implements InvocationHandler {
   private final Connection realConnection;
   private final Connection proxyConnection;
   private long checkoutTimestamp;
+  //连接创建时间
   private long createdTimestamp;
+  //连接上次使用时间
   private long lastUsedTimestamp;
+  //
   private int connectionTypeCode;
+  //连接是否有效
   private boolean valid;
 
   /**
    * Constructor for SimplePooledConnection that uses the Connection and PooledDataSource passed in.
+   * 使用传入的 Connection 和 PooledDataSource 的构造 SimplePooledConnection
    *
    * @param connection
    *          - the connection that is to be presented as a pooled connection
@@ -56,11 +61,13 @@ class PooledConnection implements InvocationHandler {
     this.createdTimestamp = System.currentTimeMillis();
     this.lastUsedTimestamp = System.currentTimeMillis();
     this.valid = true;
+    //创建代理类
     this.proxyConnection = (Connection) Proxy.newProxyInstance(Connection.class.getClassLoader(), IFACES, this);
   }
 
   /**
    * Invalidates the connection.
+   * 标识连接失效
    */
   public void invalidate() {
     valid = false;
@@ -68,6 +75,7 @@ class PooledConnection implements InvocationHandler {
 
   /**
    * Method to see if the connection is usable.
+   * 检测连接是否可用
    *
    * @return True if the connection is usable
    */
@@ -242,6 +250,7 @@ class PooledConnection implements InvocationHandler {
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
     String methodName = method.getName();
+    //如果通过反射调用连接关闭close方法，把连接push回空闲连接池(注意过程)
     if (CLOSE.equals(methodName)) {
       dataSource.pushConnection(this);
       return null;
@@ -252,6 +261,7 @@ class PooledConnection implements InvocationHandler {
         // throw an SQLException instead of a Runtime
         checkConnection();
       }
+      //调用的不是连接close方法
       return method.invoke(realConnection, args);
     } catch (Throwable t) {
       throw ExceptionUtil.unwrapThrowable(t);

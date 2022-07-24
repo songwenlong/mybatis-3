@@ -19,13 +19,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * 记录一些 PooledDataSource 的状态
+ *
  * @author Clinton Begin
  */
 public class PoolState {
 
   protected PooledDataSource dataSource;
 
+  //空闲连接列表
   protected final List<PooledConnection> idleConnections = new ArrayList<>();
+  //活动连接列表
   protected final List<PooledConnection> activeConnections = new ArrayList<>();
   protected long requestCount = 0;
   protected long accumulatedRequestTime = 0;
@@ -44,10 +48,12 @@ public class PoolState {
     return requestCount;
   }
 
+  //平均请求时间
   public synchronized long getAverageRequestTime() {
     return requestCount == 0 ? 0 : accumulatedRequestTime / requestCount;
   }
 
+  //平均等待时间
   public synchronized long getAverageWaitTime() {
     return hadToWaitCount == 0 ? 0 : accumulatedWaitTime / hadToWaitCount;
 
@@ -73,10 +79,12 @@ public class PoolState {
     return requestCount == 0 ? 0 : accumulatedCheckoutTime / requestCount;
   }
 
+  //空闲连接数
   public synchronized int getIdleConnectionCount() {
     return idleConnections.size();
   }
 
+  //活动连接数
   public synchronized int getActiveConnectionCount() {
     return activeConnections.size();
   }

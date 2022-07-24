@@ -20,6 +20,9 @@ import java.util.Properties;
 import javax.sql.DataSource;
 
 /**
+ * DataSource 工厂，有三个实现类：UnpooledDataSourceFactory、PooledDataSourceFactory、JndiDataSourceFactory
+ * 具体使用哪个实现类是由配置确定
+ *
  * @author Clinton Begin
  */
 public interface DataSourceFactory {

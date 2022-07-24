@@ -27,6 +27,14 @@ import org.apache.ibatis.datasource.DataSourceException;
 import org.apache.ibatis.datasource.DataSourceFactory;
 
 /**
+ * JNDI（全称为Java Naming and Directory Interface），
+ * JNDI是 SUN 公司提供的一种标准的 Java 命名系统接口，
+ * JNDI 提供统一的客户端 API，通过不同的访问提供者接口 JNDI 服务供应接口 ( SPI ) 的实现，
+ * 由管理者将 JNDI API 映射为特定的命名服务和目录系统，使得 Java 应用程序可以和这些命名服务和目录服务之间进行交互。
+ *
+ * DataSource的设置需要依赖具体的数据源厂商，因此不能在构造函数中进行实例化，
+ * 只能从配置中读取相关信息，然后根据上下文环境Context，通过lookup的方式进行实例化。
+ *
  * @author Clinton Begin
  */
 public class JndiDataSourceFactory implements DataSourceFactory {
@@ -43,8 +51,10 @@ public class JndiDataSourceFactory implements DataSourceFactory {
       InitialContext initCtx;
       Properties env = getEnvProperties(properties);
       if (env == null) {
+        //配置项中没有以 “env.” 开头的配置
         initCtx = new InitialContext();
       } else {
+        //配置项中有以 “env.” 开头的配置
         initCtx = new InitialContext(env);
       }
 
@@ -65,6 +75,7 @@ public class JndiDataSourceFactory implements DataSourceFactory {
     return dataSource;
   }
 
+  //获取配置项中的以 “env.” 开头的配置
   private static Properties getEnvProperties(Properties allProps) {
     final String PREFIX = ENV_PREFIX;
     Properties contextProperties = null;

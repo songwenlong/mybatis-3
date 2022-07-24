@@ -40,6 +40,7 @@ public class UnpooledDataSource implements DataSource {
 
   private ClassLoader driverClassLoader;
   private Properties driverProperties;
+  //Map<驱动类的类名, 驱动类的实例>
   private static Map<String, Driver> registeredDrivers = new ConcurrentHashMap<>();
 
   private String driver;
@@ -49,9 +50,11 @@ public class UnpooledDataSource implements DataSource {
 
   private Boolean autoCommit;
   private Integer defaultTransactionIsolationLevel;
+  //默认的网络超时时间，用以等待数据库操作完成
   private Integer defaultNetworkTimeout;
 
   static {
+    //加载数据库驱动
     Enumeration<Driver> drivers = DriverManager.getDrivers();
     while (drivers.hasMoreElements()) {
       Driver driver = drivers.nextElement();
@@ -206,6 +209,7 @@ public class UnpooledDataSource implements DataSource {
   }
 
   private Connection doGetConnection(String username, String password) throws SQLException {
+    //构造 Properties
     Properties props = new Properties();
     if (driverProperties != null) {
       props.putAll(driverProperties);
@@ -219,13 +223,16 @@ public class UnpooledDataSource implements DataSource {
     return doGetConnection(props);
   }
 
+  //其他 doGetConnection方法 最后调的都是这个方法：初始化驱动 -> 获取连接 -> 配置连接
   private Connection doGetConnection(Properties properties) throws SQLException {
+    //先初始化数据库驱动
     initializeDriver();
     Connection connection = DriverManager.getConnection(url, properties);
     configureConnection(connection);
     return connection;
   }
 
+  //初始化数据库驱动，其实就是看字段driver（驱动类名）标识的驱动是否已经在registeredDrivers之中了，不在就加载类并实例化放入registeredDrivers中
   private synchronized void initializeDriver() throws SQLException {
     if (!registeredDrivers.containsKey(driver)) {
       Class<?> driverType;
@@ -246,6 +253,9 @@ public class UnpooledDataSource implements DataSource {
     }
   }
 
+  /**
+   * 配置连接，主要设置默认网络超时时间和超时处理线程、是否自动提交、默认事务隔离级别
+   */
   private void configureConnection(Connection conn) throws SQLException {
     if (defaultNetworkTimeout != null) {
       conn.setNetworkTimeout(Executors.newSingleThreadExecutor(), defaultNetworkTimeout);
