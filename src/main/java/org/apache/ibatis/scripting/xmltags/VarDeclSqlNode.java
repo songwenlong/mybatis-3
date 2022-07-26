@@ -16,11 +16,15 @@
 package org.apache.ibatis.scripting.xmltags;
 
 /**
+ * 对应 bind 标签，为上下文变量(单条 sql 语句有效)绑定一个 value
+ *
  * @author Frank D. Martinez [mnesarco]
  */
 public class VarDeclSqlNode implements SqlNode {
 
+  //bind 标签的 name 属性
   private final String name;
+  //bind 标签的 value 属性
   private final String expression;
 
   public VarDeclSqlNode(String name, String exp) {

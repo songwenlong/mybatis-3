@@ -18,10 +18,14 @@ package org.apache.ibatis.scripting.xmltags;
 import java.util.List;
 
 /**
+ * case 标签
+ *
  * @author Clinton Begin
  */
 public class ChooseSqlNode implements SqlNode {
+  //otherwise 分支
   private final SqlNode defaultSqlNode;
+  //when 分支
   private final List<SqlNode> ifSqlNodes;
 
   public ChooseSqlNode(List<SqlNode> ifSqlNodes, SqlNode defaultSqlNode) {

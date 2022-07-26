@@ -16,11 +16,16 @@
 package org.apache.ibatis.scripting.xmltags;
 
 /**
+ * if 标签
+ *
  * @author Clinton Begin
  */
 public class IfSqlNode implements SqlNode {
+  //if 标签中的 test 表达式执行器
   private final ExpressionEvaluator evaluator;
+  //if 标签中的 test 判断文本
   private final String test;
+  //if 标签中的 SqlNode
   private final SqlNode contents;
 
   public IfSqlNode(SqlNode contents, String test) {

@@ -23,6 +23,8 @@ import org.apache.ibatis.scripting.ScriptingException;
 import org.apache.ibatis.type.SimpleTypeRegistry;
 
 /**
+ * 判断 SqlNode 内容是否为动态sql
+ *
  * @author Clinton Begin
  */
 public class TextSqlNode implements SqlNode {
@@ -38,6 +40,7 @@ public class TextSqlNode implements SqlNode {
     this.injectionFilter = injectionFilter;
   }
 
+  //判断是否动态 sql
   public boolean isDynamic() {
     DynamicCheckerTokenParser checker = new DynamicCheckerTokenParser();
     GenericTokenParser parser = createParser(checker);
@@ -70,11 +73,15 @@ public class TextSqlNode implements SqlNode {
     public String handleToken(String content) {
       Object parameter = context.getBindings().get("_parameter");
       if (parameter == null) {
+        //parameter 为 null
         context.getBindings().put("value", null);
       } else if (SimpleTypeRegistry.isSimpleType(parameter.getClass())) {
+        //parameter 为 SimpleType
         context.getBindings().put("value", parameter);
       }
+      //parameter 不为 null 和 SimpleType，需要解析
       Object value = OgnlCache.getValue(content, context.getBindings());
+      //value 转换为字符串
       String srtValue = value == null ? "" : String.valueOf(value); // issue #274 return "" instead of "null"
       checkInjection(srtValue);
       return srtValue;
@@ -101,6 +108,7 @@ public class TextSqlNode implements SqlNode {
 
     @Override
     public String handleToken(String content) {
+      //只是将 isDynamic 设置为 true
       this.isDynamic = true;
       return null;
     }

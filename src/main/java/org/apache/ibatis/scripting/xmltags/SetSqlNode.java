@@ -21,6 +21,9 @@ import java.util.List;
 import org.apache.ibatis.session.Configuration;
 
 /**
+ *  * set 标签
+ *  * 继承 TrimSqlNode，指定了前缀"SET" 和 prefixesToOverride
+ *
  * @author Clinton Begin
  */
 public class SetSqlNode extends TrimSqlNode {

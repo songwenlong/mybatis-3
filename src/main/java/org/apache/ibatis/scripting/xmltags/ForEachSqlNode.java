@@ -22,6 +22,8 @@ import org.apache.ibatis.parsing.GenericTokenParser;
 import org.apache.ibatis.session.Configuration;
 
 /**
+ * foreach 标签
+ *
  * @author Clinton Begin
  */
 public class ForEachSqlNode implements SqlNode {
@@ -75,6 +77,7 @@ public class ForEachSqlNode implements SqlNode {
     int i = 0;
     for (Object o : iterable) {
       DynamicContext oldContext = context;
+      //是第一个元素 或者 分隔符为null，不拼接分隔符
       if (first || separator == null) {
         context = new PrefixedContext(context, "");
       } else {
@@ -92,6 +95,7 @@ public class ForEachSqlNode implements SqlNode {
         applyItem(context, o, uniqueNumber);
       }
       contents.apply(new FilteredDynamicContext(configuration, context, index, item, uniqueNumber));
+      //改变是否第一个元素标识的值
       if (first) {
         first = !((PrefixedContext) context).isPrefixApplied();
       }

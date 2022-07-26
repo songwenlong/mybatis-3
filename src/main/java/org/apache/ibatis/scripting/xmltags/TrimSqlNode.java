@@ -25,14 +25,20 @@ import java.util.StringTokenizer;
 import org.apache.ibatis.session.Configuration;
 
 /**
+ * 对应trim 标签，为 sql 添加、替换（覆盖）指定的前缀与后缀
+ *
  * @author Clinton Begin
  */
 public class TrimSqlNode implements SqlNode {
 
   private final SqlNode contents;
+  //前缀
   private final String prefix;
+  //后缀
   private final String suffix;
+  //要覆盖的前缀
   private final List<String> prefixesToOverride;
+  //要覆盖的后缀
   private final List<String> suffixesToOverride;
   private final Configuration configuration;
 
@@ -123,12 +129,14 @@ public class TrimSqlNode implements SqlNode {
         prefixApplied = true;
         if (prefixesToOverride != null) {
           for (String toRemove : prefixesToOverride) {
+            //移除指定前缀
             if (trimmedUppercaseSql.startsWith(toRemove)) {
               sql.delete(0, toRemove.trim().length());
               break;
             }
           }
         }
+        //在 sql 起始处插入"前缀 "
         if (prefix != null) {
           sql.insert(0, " ");
           sql.insert(0, prefix);
@@ -140,6 +148,7 @@ public class TrimSqlNode implements SqlNode {
       if (!suffixApplied) {
         suffixApplied = true;
         if (suffixesToOverride != null) {
+          //移除指定后缀
           for (String toRemove : suffixesToOverride) {
             if (trimmedUppercaseSql.endsWith(toRemove) || trimmedUppercaseSql.endsWith(toRemove.trim())) {
               int start = sql.length() - toRemove.trim().length();
@@ -149,6 +158,7 @@ public class TrimSqlNode implements SqlNode {
             }
           }
         }
+        //在 sql 末尾处添加" 后缀"
         if (suffix != null) {
           sql.append(" ");
           sql.append(suffix);

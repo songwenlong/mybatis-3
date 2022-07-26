@@ -28,6 +28,11 @@ import org.apache.ibatis.builder.BuilderException;
  */
 public class ExpressionEvaluator {
 
+  /**
+   * 计算 Boolean：
+   *   value instanceof Boolean -> Boolean
+   *   value instanceof Number -> =0?
+   */
   public boolean evaluateBoolean(String expression, Object parameterObject) {
     Object value = OgnlCache.getValue(expression, parameterObject);
     if (value instanceof Boolean) {
@@ -48,6 +53,11 @@ public class ExpressionEvaluator {
   }
 
   /**
+   * 计算 Iterable：
+   *   value instanceof Iterable -> Iterable
+   *   isArray -> ArrayList
+   *   Map ->  Set<Map.Entry<K, V>>
+   *
    * @since 3.5.9
    */
   public Iterable<?> evaluateIterable(String expression, Object parameterObject, boolean nullable) {
