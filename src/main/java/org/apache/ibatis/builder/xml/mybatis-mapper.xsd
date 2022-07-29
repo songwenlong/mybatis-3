@@ -15,6 +15,348 @@
        See the License for the specific language governing permissions and
        limitations under the License.
 
+XSD：XML Schema Definition，XML Schema 定义
+========================================================================================================================
+XML Schema 的作用是定义 XML 文档的合法构建模块，类似 DTD：
+  定义可出现在文档中的元素
+  定义可出现在文档中的属性
+  定义哪个元素是子元素
+  定义子元素的次序
+  定义子元素的数目
+  定义元素是否为空，或者是否可包含文本
+  定义元素和属性的数据类型
+  定义元素和属性的默认值以及固定值
+
+XML Schema 是 DTD 的继任者，相比DTD的优点
+  XML Schema 可针对未来的需求进行扩展：
+    在其他 Schema 中重复使用您的 Schema
+    创建由标准类型衍生而来的您自己的数据类型
+    在相同的文档中引用多重的 Schema
+  XML Schema 基于 XML 编写，使用 XML 语法：
+    可使用 XML 编辑器来编辑 Schema 文件
+    可使用 XML 解析器来解析 Schema 文件
+    可通过 XML DOM 来处理 Schema
+    可通过 XSLT 来转换 Schema
+  XML Schema 支持数据类型：
+    可更容易地描述允许的文档内容
+    可更容易地验证数据的正确性
+    可更容易地与来自数据库的数据一并工作
+    可更容易地定义数据约束（data facets）
+    可更容易地定义数据模型（或称数据格式）
+    可更容易地在不同的数据类型间转换数据
+    注：数据约束，或称 facets，是 XML Schema 原型中的一个术语，中文可译为“面”，用来约束数据类型的容许值。
+  XML Schema 可保护数据通信：
+     当数据从发送方被发送到接受方时，其要点是双方应有关于内容的相同的“期望值”。
+     通过 XML Schema，发送方可以用一种接受方能够明白的方式来描述数据。
+     一种数据，比如 "03-11-2004"，在某些国家被解释为11月3日，而在另一些国家为当作3月11日。
+     但是一个带有数据类型的 XML 元素，比如：<date type="date">2004-03-11</date>，可确保对内容一致的理解，这是因为 XML 的数据类型 "date" 要求的格式是 "YYYY-MM-DD"。
+  XML Schema 格式良好：
+    必须以 XML 声明开头
+    必须拥有唯一的根元素
+    开始标签必须与结束标签相匹配
+    元素对大小写敏感
+    所有的元素都必须关闭
+    所有的元素都必须正确地嵌套
+    必须对特殊字符使用实体
+  XML Schema 更完善，功能更强大
+  XML Schema 支持命名空间
+
+========================================================================================================================
+
+<schema> 元素
+  是每一个 XML Schema 的根元素，可包含属性
+  xmlns 默认的命名空间是 "http://mybatis.org/schema/mybatis-mapper"
+  xmlns:xs schema 中用到的元素和数据类型来自命名空间 "http://www.w3.org/2001/XMLSchema"，来自空间的元素和数据类型应该使用前缀 xs
+  targetNamespace 被此 schema 定义的元素来自命名空间 "http://mybatis.org/schema/mybatis-mapper"
+  elementFormDefault 任何 XML 实例文档所使用的且在此 schema 中声明过的元素必须被命名空间限定
+
+
+========================================================================================================================
+简易元素
+  仅包含文本的元素，不包含任何其他的元素或属性
+  文本有很多类型，可以是 XML Schema 定义中包括的类型中的一种（布尔、字符串、数据等等），也可以是自定义的定制类型
+  也可向数据类型添加限定（即 facets），以此来限制它的内容，或者可以要求数据匹配某种特定的模式
+定义简易元素
+  <xs:element name="xxx" type="yyy"/>
+  可指定的默认值或固定值，default、fixed
+
+属性
+  简易元素无法拥有属性。假如某个元素拥有属性，它就会被当作某种复合类型。但是属性本身总是作为简易类型被声明的。
+定义属性
+  <xs:attribute name="xxx" type="yyy"/>
+  可指定的默认值或固定值，default、fixed
+  在缺省的情况下，属性是可选的，如需规定属性为必选，使用 "use" 属性 use="required"
+
+
+========================================================================================================================
+复合元素
+  包含其他元素及/或属性的 XML 元素。
+四种类型的复合元素：
+  空元素
+  包含其他元素的元素
+  仅包含文本的元素
+  包含元素和文本的元素
+注：上述元素均可包含属性！
+
+定义复合元素
+方式1，通过命名此元素，直接对元素进行声明：
+  <xs:element name="employee">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="firstname" type="xs:string"/>
+        <xs:element name="lastname" type="xs:string"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+方式2，元素可以使用 type 属性，这个属性的作用是引用要使用的复合类型的名称：
+  <xs:element name="employee" type="personinfo"/>
+  <xs:complexType name="personinfo">
+    <xs:sequence>
+      <xs:element name="firstname" type="xs:string"/>
+      <xs:element name="lastname" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+在已有的复合元素之上以某个复合元素为基础，然后添加一些元素：
+  <xs:element name="employee" type="fullpersoninfo"/>
+  <xs:complexType name="personinfo">
+    <xs:sequence>
+      <xs:element name="firstname" type="xs:string"/>
+      <xs:element name="lastname" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="fullpersoninfo">
+    <xs:complexContent>
+      <xs:extension base="personinfo">
+        <xs:sequence>
+          <xs:element name="address" type="xs:string"/>
+          <xs:element name="city" type="xs:string"/>
+          <xs:element name="country" type="xs:string"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+复合类型-空元素：
+  不能包含内容，只能含有属性。例如
+    <xs:element name="product">
+    <xs:complexType>
+      <xs:attribute name="prodid" type="xs:positiveInteger"/>
+    </xs:complexType>
+    </xs:element>
+复合类型-仅含元素：
+  只能包含其他元素的元素。例如
+    <xs:element name="person">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element name="firstname" type="xs:string"/>
+          <xs:element name="lastname" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+    </xs:element>
+复合类型-仅含文本：
+  可包含文本和属性。因此要添加 simpleContent 元素。使用简易内容时必须在 simpleContent 元素内定义扩展或限定。例如
+    <xs:element name="某个名称">
+      <xs:complexType>
+        <xs:simpleContent>
+          <xs:extension base="basetype">
+            ....
+            ....
+          </xs:extension>
+        </xs:simpleContent>
+      </xs:complexType>
+    </xs:element>
+ 或 <xs:element name="某个名称">
+      <xs:complexType>
+        <xs:simpleContent>
+          <xs:restriction base="basetype">
+            ....
+            ....
+          </xs:restriction>
+        </xs:simpleContent>
+      </xs:complexType>
+    </xs:element>
+复合类型-包含混合内容：
+  可包含属性、元素以及文本。例如
+    <xs:element name="letter">
+      <xs:complexType mixed="true">
+        <xs:sequence>
+          <xs:element name="name" type="xs:string"/>
+          <xs:element name="orderid" type="xs:positiveInteger"/>
+          <xs:element name="shipdate" type="xs:date"/>
+        </xs:sequence>
+      </xs:complexType>
+    </xs:element>
+  为了使字符数据可以出现在 "letter" 的子元素之间，mixed 属性必须被设置为 "true"。注意下例中的文字部分：
+    <letter>
+    Dear Mr.<name>Mei Zuna</name>.
+    Your order <orderid>G555</orderid>
+    will be shipped on <shipdate>2022-07-29</shipdate>.
+    </letter>
+
+
+
+========================================================================================================================
+7种复合类型指示器
+Order 指示器：定义元素的顺序
+  All：规定子元素可以按照任意顺序出现，且每个子元素必须只出现一次
+  Choice：规定可出现某个子元素或者可出现另外一个子元素（非此即彼）
+  Sequence：规定子元素必须按照特定的顺序出现
+Occurrence 指示器：定义某个元素出现的频率
+  maxOccurs：规定某个元素可出现的最大次数，默认值为1，出现次数不受限制， maxOccurs="unbounded"
+  minOccurs：规定某个元素能够出现的最小次数，默认值为1
+Group 指示器：定义相关的数批元素，可在其他定义中引用
+  元素组：通过 group 声明进行定义，必须在 group 声明内部定义一个 all、choice 或者 sequence 元素。例如
+    <xs:group name="persongroup">
+      <xs:sequence>
+        <xs:element name="firstname" type="xs:string"/>
+        <xs:element name="lastname" type="xs:string"/>
+        <xs:element name="birthday" type="xs:date"/>
+      </xs:sequence>
+    </xs:group>
+  属性组：通过 attributeGroup 声明来进行定义。例如
+    <xs:attributeGroup name="personattrgroup">
+      <xs:attribute name="firstname" type="xs:string"/>
+      <xs:attribute name="lastname" type="xs:string"/>
+      <xs:attribute name="birthday" type="xs:date"/>
+    </xs:attributeGroup>
+
+
+
+========================================================================================================================
+<any> 元素
+  使我们有能力通过未被 schema 规定的元素来拓展 XML 文档
+<anyAttribute> 元素
+  使我们有能力通过未被 schema 规定的属性来扩展 XML 文档
+
+元素替换（Element Substitution）
+  一个元素可对另一个元素进行替换，通过定义一个 substitutionGroup 来实现。
+阻止元素替换
+  block 属性：<xs:element name="name" type="xs:string" block="substitution"/>
+
+
+
+========================================================================================================================
+数据类型
+字符串
+  字符串数据类型（String Data Type）：xs:string，可包含字符、换行、回车以及制表符
+  规格化字符串数据类型（NormalizedString Data Type）：xs:normalizedString，同样可包含字符，但是 XML 处理器会移除折行，回车以及制表符
+  Token 数据类型（Token Data Type）：xs:toke，可包含字符，但是 XML 处理器会移除换行符、回车、制表符、开头和结尾的空格以及（连续的）空格
+字符串数据类型
+  请注意，所有以下的数据类型均衍生于字符串数据类型（除了字符串数据类型本身）
+  -名称	            -描述
+  ENTITIES
+  ENTITY
+  ID	                在 XML 中提交 ID 属性的字符串 (仅与 schema 属性一同使用)
+  IDREF	            在 XML 中提交 IDREF 属性的字符串(仅与 schema 属性一同使用)
+  IDREFS language	    包含合法的语言 id 的字符串
+  Name	            包含合法 XML 名称的字符串
+  NCName
+  NMTOKEN	            在 XML 中提交 NMTOKEN 属性的字符串 (仅与 schema 属性一同使用)
+  NMTOKENS
+  normalizedString	不包含换行符、回车或制表符的字符串
+  QName
+  string	             字符串
+  token	             不包含换行符、回车或制表符、开头或结尾空格或者多个连续空格的字符串
+对字符串数据类型的限定（Restriction）
+  可与字符串数据类型一同使用的限定：
+  enumeration
+  length
+  maxLength
+  minLength
+  pattern (NMTOKENS、IDREFS 以及 ENTITIES 无法使用此约束)
+  whiteSpace
+
+日期
+  日期数据类型（Date Data Type）：xs:date，用于定义日期，格式"YYYY-MM-DD"；时区：在日期后加一个 "Z" 使用世界调整时间（UTC time）来输入一个日期 或 在日期后添加一个正的或负时间来规定以世界调整时间为准的偏移量
+  时间数据类型（Time Data Type）：xs:time，用于定义时间，格式"hh:mm:ss"；时区：在时间后加一个 "Z" 使用世界调整时间（UTC time）来输入一个时间 或 在时间后添加一个正的或负时间来规定以世界调整时间为准的偏移量
+  日期时间数据类型（DateTime Data Type）：xs:dateTime，用于定义日期和时间，格式"YYYY-MM-DDThh:mm:ss"；时区：在日期时间后加一个 "Z" 使用世界调整时间（UTC time）来输入一个日期时间 或 在日期时间后添加一个正的或负时间来规定以世界调整时间为准的偏移量
+  持续时间数据类型（Duration Data Type）：xs:duration，用于规定时间间隔，格式"PnYnMnDTnHnMnS"，负的持续时间，在 P 之前输入减号
+    P 表示周期(必需)
+    nY 表示年数
+    nM 表示月数
+    nD 表示天数
+    T 表示时间部分的起始 （如果您打算规定小时、分钟和秒，则此选项为必需）
+    nH 表示小时数
+    nM 表示分钟数
+    nS 表示秒数
+日期和时间数据类型
+  -名称	        -描述
+  date	        定义一个日期值
+  dateTime	    定义一个日期和时间值
+  duration	    定义一个时间间隔
+  gDay	        定义日期的一个部分 - 天 (DD)
+  gMonth	    定义日期的一个部分 - 月 (MM)
+  gMonthDay	    定义日期的一个部分 - 月和天 (MM-DD)
+  gYear	        定义日期的一个部分 - 年 (YYYY)
+  gYearMonth	定义日期的一个部分 - 年和月 (YYYY-MM)
+  time	        定义一个时间值
+对日期数据类型的限定（Restriction）
+  可与日期数据类型一同使用的限定：
+  enumeration
+  maxExclusive
+  maxInclusive
+  minExclusive
+  minInclusive
+  pattern
+  whiteSpace
+
+数值数据类型（Numeric Data Types）
+  十进制数据类型：xs:decimal，用于规定一个数值
+  整数数据类型：xs:integer，用于规定无小数成分的数值
+数值数据类型
+  请注意，下面所有的数据类型均源自于十进制数据类型（除 decimal 本身以外）
+  -名字	                -描述
+  byte	                有正负的 8 位整数
+  decimal	            十进制数
+  int	                有正负的 32 位整数
+  integer	            整数值
+  long	                有正负的 64 位整数
+  negativeInteger	    仅包含负值的整数 ( .., -2, -1.)
+  nonNegativeInteger	仅包含非负值的整数 (0, 1, 2, ..)
+  nonPositiveInteger	仅包含非正值的整数 (.., -2, -1, 0)
+  positiveInteger	    仅包含正值的整数 (1, 2, ..)
+  short	                有正负的 16 位整数
+  unsignedLong	        无正负的 64 位整数
+  unsignedInt	        无正负的 32 位整数
+  unsignedShort	        无正负的 16 位整数
+  unsignedByte	        无正负的 8 位整数
+对数值数据类型的限定（Restriction）
+  可与数值数据类型一同使用的限定：
+  enumeration
+  fractionDigits
+  maxExclusive
+  maxInclusive
+  minExclusive
+  minInclusive
+  pattern
+  totalDigits
+  whiteSpace
+
+杂项数据类型（Miscellaneous Data Types）
+  包括逻辑、base64Binary、十六进制、浮点、双精度、anyURI、anyURI 以及 NOTATION
+  逻辑数据类型（Boolean Data Type）：xs:boolean，用于规定 true 或 false 值
+  二进制数据类型（Binary Data Types：base64Binary (Base64 编码的二进制数据)、hexBinary (十六进制编码的二进制数据)，用于表达二进制形式的数据
+  AnyURI 数据类型（AnyURI Data Type）：xs:anyURI，用于规定 URI， URI 中的空格要用 %20 替换
+杂项数据类型（Miscellaneous Data Types）
+  名称
+  anyURI
+  base64Binary
+  boolean
+  double
+  float
+  hexBinary
+  NOTATION
+  QName
+对杂项数据类型的限定（Restriction）
+  可与杂项数据类型一同使用的限定：
+  enumeration (布尔数据类型无法使用此约束*)
+  length (布尔数据类型无法使用此约束)
+  maxLength (布尔数据类型无法使用此约束)
+  minLength (布尔数据类型无法使用此约束)
+  pattern
+  whiteSpace
+  注：约束指 constraint
+
 -->
 <xs:schema
   xmlns="http://mybatis.org/schema/mybatis-mapper"
